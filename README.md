@@ -1,231 +1,145 @@
-# Resume Analyzer & Builder
+# AI Resume Analyzer 🤖
 
-<div align="right">
+An AI-powered Resume Analyzer built with Python, Flask, and Groq LLM to help users analyze their resumes and get AI-generated insights.
 
-[![Get started with GitHub Actions](https://img.shields.io/github/actions/workflow/status/SagarBiswas-MultiHAT/Ai-Resume-Analyzer/get-started-with-github-actions.yml?branch=main)](https://github.com/SagarBiswas-MultiHAT/Ai-Resume-Analyzer/actions/workflows/get-started-with-github-actions.yml)
-&nbsp;
-[![License](https://img.shields.io/github/license/SagarBiswas-MultiHAT/resume-analyzer-builder)](LICENSE)
-&nbsp;
-[![Dependabot](https://img.shields.io/badge/dependabot-enabled-brightgreen)](https://github.com/SagarBiswas-MultiHAT/resume-analyzer-builder/security/dependabot)
+## 🚀 Overview
 
-</div>
+AI Resume Analyzer is a web-based application that uses Artificial Intelligence and Natural Language Processing (NLP) to analyze resumes and provide useful feedback.
 
-A local-first Flask web app that accepts PDF/DOCX resumes, extracts text, calls a Groq/OpenAI-compatible model, and returns structured, actionable improvements with ratings, keyword gaps, and rewrite examples.
+The application allows users to upload their resumes and receive AI-powered analysis to better understand their skills, experience, and professional profile.
 
-## Table of contents
+## ✨ Features
 
-- Overview
-- Features
-- How it works
-- Tech stack
-- Project structure
-- Quickstart
-- Configuration
-- Usage (UI + API)
-- Output fields
-- Data flow and limits
-- Troubleshooting
-- Development
-- Docker
-- Security
-- Contributing
-- License
+- 📄 Resume Upload – Upload resumes in PDF and DOCX formats.
+- 🤖 AI-Powered Analysis – Analyze resume content using Groq LLM.
+- 🧠 NLP-Based Processing – Extract and process relevant resume information.
+- 📊 Resume Insights – Generate useful feedback from resume content.
+- 🌐 Web Interface – Simple and user-friendly frontend.
+- ⚡ Python Flask Backend – Handles resume processing and AI integration.
 
-## Overview
+## 🛠️ Technologies Used
 
-Resume Analyzer & Builder is a single-page app for fast, clear resume feedback. You upload a resume, the backend extracts text and requests a structured critique from an LLM, and the UI renders a rating, prioritized fixes, keyword gaps, and improved examples you can copy or download.
+| Technology | Purpose |
+|---|---|
+| Python | Backend development |
+| Flask | Web framework |
+| Groq API | AI-powered analysis |
+| NLP | Text processing |
+| HTML5 | Frontend structure |
+| CSS3 | Styling |
+| JavaScript | Frontend functionality |
+| PyPDF / DOCX libraries | Resume file processing |
 
-It is designed to be simple to run locally, easy to understand, and focused on actionable improvements rather than generic advice.
-
-![App screenshot](https://imgur.com/1reTyVi.png)
-
-![App screenshot 2](https://imgur.com/UuN1BO9.png)
-
-## Features
-
-- Upload PDF/DOCX resumes (max 5 MB).
-- Local text extraction using pdfminer (PDF) and python-docx (DOCX).
-- Groq OpenAI-compatible client with retry + model fallbacks.
-- Structured analysis with rating, suggestions, keyword gaps, improved summary, improved bullets, and priority fix order.
-- Modern UI with drag-and-drop, dark mode, copy buttons, and a downloadable text report.
-- Safety defaults: localhost-only CORS and automatic temp file cleanup.
-- Helpful health/debug endpoints for local troubleshooting.
-
-## How it works
-
-1. The browser uploads a resume to /upload.
-2. Flask stores the file in a temporary directory and extracts text.
-3. The extracted text is sent to Groq via the OpenAI-compatible Responses API.
-4. The response is parsed into named sections.
-5. The UI renders the structured results and enables copy/download actions.
-
-## Tech stack
-
-- Backend: Flask, pdfminer.six, python-docx, spaCy, python-dotenv
-- AI client: Groq OpenAI-compatible SDK
-- Frontend: vanilla HTML/CSS/JS
-
-## Project structure
-
-- [backend/app.py](backend/app.py): Flask server, AI call, parsing, and endpoints
-- [backend/requirements.txt](backend/requirements.txt): backend dependencies
-- [frontend/index.html](frontend/index.html): single-page UI
-- [frontend/script.js](frontend/script.js): upload, render, copy, download
-- [frontend/styles.css](frontend/styles.css): styles and theming
-- [tests/test_parsing.py](tests/test_parsing.py): parser tests
-
-## Key points
-
-- Backend: `backend/app.py` (Flask)
-- Frontend: `frontend/` (static assets served by Flask)
-- AI: OpenAI-compatible Groq client (requires `GROQ_API_KEY`)
-- Upload limits: 5 MB; allowed types: PDF, DOCX
-
-## Quickstart
-
-### Windows PowerShell
-
-```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r backend\requirements.txt -r requirements-dev.txt
-python -m spacy download en_core_web_sm
-```
-
-### macOS/Linux
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r backend/requirements.txt -r requirements-dev.txt
-python -m spacy download en_core_web_sm
-```
-
-Run the app:
-
-```powershell
-python .\backend\app.py
-```
-
-Open http://localhost:5000.
-
-## Configuration
-
-Create a .env file in the repo root or backend/ (both are supported).
-
-Required:
+## 📂 Project Structure
 
 ```text
-GROQ_API_KEY=your_groq_api_key_here
+AI-Resume-Analyzer/
+│
+├── backend/
+│   ├── app.py
+│   ├── requirements.txt
+│   └── installRequirements.txt
+│
+├── frontend/
+│   ├── index.html
+│   ├── styles.css
+│   ├── script.js
+│   └── favicon.ico
+│
+├── tests/
+│   └── test_parsing.py
+│
+├── .gitignore
+├── README.md
+├── Dockerfile
+└── pyproject.toml
 ```
 
-Optional (defaults shown):
+## ⚙️ Installation & Setup
 
-```text
-GROQ_MODEL=llama-3.3-70b-versatile
-GROQ_FALLBACK_MODELS=llama-3.1-70b-versatile,llama-3.1-8b-instant,mixtral-8x7b-32768
-GROQ_TEMPERATURE=0.2
-GROQ_TOP_P=0.9
-CORS_ORIGINS=http://localhost:5000,http://127.0.0.1:5000
-APP_ENV=dev
-```
-
-Notes:
-
-- If GROQ_API_KEY is missing, the server exits with a clear error message.
-- For local dev, backend/local_settings.py or backend/groq_key.txt can also provide the key.
-
-## Usage
-
-### UI
-
-1. Open the app in a browser.
-2. Drag & drop a PDF/DOCX or click to select one.
-3. Click Upload Resume.
-4. Review the rating, suggestions, keyword gaps, and rewrite examples.
-5. Copy blocks or download the analysis as resume_analysis.txt.
-
-### API
-
-Base URL: http://localhost:5000
-
-- GET /health
-- GET /debug/config (dev-only)
-- POST /upload (multipart form with resume file)
-- POST /analyze (JSON with resume_text)
-
-Example (PowerShell upload):
-
-```powershell
-Invoke-RestMethod -Uri http://localhost:5000/upload -Method Post -Form @{ resume = Get-Item .\sample.pdf }
-```
-
-Example (curl analyze):
+### 1. Clone the Repository
 
 ```bash
-curl -X POST http://localhost:5000/analyze \
-	-H "Content-Type: application/json" \
-	-d '{"resume_text":"Your resume text here"}'
+git clone https://github.com/mahaznoor/AI-Resume-Analyzer.git
 ```
 
-## Output fields
+### 2. Open the Project Folder
 
-The /upload endpoint returns:
+```bash
+cd AI-Resume-Analyzer
+```
 
-- ai_rating: overall score (1–10)
-- ai_suggestions: detailed bullet list
-- keyword_gaps: comma-separated missing keywords
-- improved_summary: rewritten summary
-- improved_bullet_examples: improved bullet rewrites
-- priority_fix_order: ranked list of the top fixes
-- raw_ai_output: full model response (for debugging)
+### 3. Create a Virtual Environment
 
-## Data flow and limits
+```bash
+python -m venv .venv
+```
 
-- Upload limit: 5 MB (server-side enforced).
-- Supported formats: .pdf and .docx only.
-- Temporary files are removed after processing.
-- CORS is restricted to localhost by default.
-- The /debug/config endpoint is only enabled when APP_ENV is dev/local/debug.
+### 4. Activate Virtual Environment
 
-## Troubleshooting
-
-- GROQ_API_KEY missing: add it to .env, backend/local_settings.py, or a session env var.
-- spaCy model not found: run python -m spacy download en_core_web_sm.
-- Model blocked: set GROQ_MODEL or GROQ_FALLBACK_MODELS to a permitted model.
-- Empty extraction: ensure the PDF/DOCX is text-based (scanned PDFs may be empty).
-- Debug info: visit /health or /debug/config (APP_ENV=dev).
-
-## Development
+**Windows PowerShell:**
 
 ```powershell
-python -m pytest -q
-pre-commit run --all-files
+.venv\Scripts\Activate
 ```
 
-## Docker
+### 5. Install Dependencies
 
-```powershell
-docker build -t resume-analyzer-builder:local .
-docker run -p 5000:5000 -e GROQ_API_KEY=your_key resume-analyzer-builder:local
+```bash
+pip install -r backend/requirements.txt
 ```
 
-## Security
+### 6. Configure Groq API
 
-- Do not commit API keys. Use environment variables or local-only files.
-- Uploaded files are stored in a temp directory and deleted after processing.
-- CORS is locked to localhost by default.
+Create a `.env` file inside the `backend` folder.
 
-See SECURITY.md for reporting.
+Add your Groq API credentials:
 
-## Contributing
+```env
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=openai/gpt-oss-120b
+```
 
-See CONTRIBUTING.md and CODE_OF_CONDUCT.md.
+Get your API key from [Groq Console](https://console.groq.com/).
 
-## License
+**Important:** Never upload your `.env` file or API key to GitHub.
 
-MIT. See LICENSE.
+### 7. Run the Application
 
-## Explain this project in 60 seconds
+```bash
+python backend/app.py
+```
 
-This is a local Flask web app that reads PDF/DOCX resumes, extracts text, and asks a Groq/OpenAI-compatible model for a structured critique. The response is parsed into a rating, suggestions, keyword gaps, improved summary, and bullet examples, then rendered in a clean UI with copy/download helpers. It is built to be simple to run, clear to read, and focused on actionable resume improvements.
+Open your browser and visit:
+
+```text
+http://127.0.0.1:5000
+```
+
+## 📸 Screenshots
+
+Add your application screenshots here to showcase the user interface and resume analysis results.
+
+## 🔮 Future Improvements
+
+- Resume scoring system
+- Job description matching
+- Skill gap analysis
+- ATS compatibility checking
+- Personalized career recommendations
+- Downloadable AI-generated reports
+
+## 👨‍💻 Developer
+
+**Mahaz Noor**
+
+Computer Science Graduate | Python | AI/ML | NLP | Web Development
+
+- GitHub: [@mahaznoor](https://github.com/mahaznoor)
+- Project: [AI Resume Analyzer](https://github.com/mahaznoor/AI-Resume-Analyzer)
+
+---
+
+⭐ If you find this project useful, consider giving it a star!
+
+**Built with Python, AI, and passion for technology.**
